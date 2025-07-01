@@ -1,4 +1,4 @@
-# Blog Personal API - Express.js
+# Blog Personal API - Express.js | Test
 
 Welcome to the **Blog Personal** project developed with Express.js. This API is designed to manage blog article publishing, user management, categories, and comments, providing a complete and modern blogging system.
 
