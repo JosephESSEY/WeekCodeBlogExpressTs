@@ -1,126 +1,128 @@
-# API Blog Personnel - Express.js
+# Blog Personal API - Express.js
 
-## Description
+Welcome to the **Blog Personal** project developed with Express.js. This API is designed to manage blog article publishing, user management, categories, and comments, providing a complete and modern blogging system.
 
-Cette API Express.js propose un système de gestion de blog personnel comprenant :
+## Project Goals
 
-* gestion des utilisateurs avec authentification JWT
-* gestion des articles
-* gestion des catégories
-* gestion des commentaires
-* pagination
-* recherche textuelle
+* Allow users to create, read, update, and delete blog articles
+* Manage users and their roles
+* Organize articles by category
+* Enable visitors to comment on articles
+* Deliver a clean, maintainable, and high-performance API
 
-**Aucune librairie ORM** n’est utilisée (requêtes SQL manuelles via un client PostgreSQL ou MySQL).
+## Main Features
 
----
+* User authentication (JWT)
+* CRUD operations for **Articles**
+* CRUD operations for **Users**
+* CRUD operations for **Comments**
+* CRUD operations for **Categories**
+* Server-side input validation
+* Centralized error handling
+* Pagination and filtering for articles
+* Basic security (CORS, rate limiting, helmet, etc.)
 
-## Fonctionnalités
+## Database Tables
 
-* Authentification JWT
-* CRUD complet sur les articles
-* CRUD complet sur les catégories
-* Gestion des commentaires
-* Pagination des résultats
-* Recherche textuelle des articles (par titre et contenu)
-* Sécurisation des routes protégées
+The API uses the following relational database tables:
 
----
+* **User**
 
-## Stack technique
+  * id
+  * email
+  * password (hashed)
+  * name
+  * role
+  * created\_at
 
-* Node.js 18+
+* **Article**
+
+  * id
+  * title
+  * content
+  * image
+  * created\_at
+  * updated\_at
+  * category\_id (foreign key)
+  * user\_id (foreign key, author)
+
+* **Category**
+
+  * id
+  * name
+  * description
+
+* **Comment**
+
+  * id
+  * content
+  * created\_at
+  * user\_id (author)
+  * article\_id (target)
+
+## Technologies Used
+
+* Node.js
 * Express.js
-* PostgreSQL ou MySQL
-* JWT (jsonwebtoken)
-* bcrypt
-* pg ou mysql2 (pas d’ORM)
-
----
+* PostgreSQL (or another relational database)
+* JWT for authentication
+* bcrypt for password hashing
+* dotenv for configuration
+* (no ORM, manual SQL queries)
 
 ## Installation
 
-1. **Cloner le dépôt**
+1. Clone the repository:
 
 ```bash
-git clone https://github.com/votre-utilisateur/api-blog-expressjs.git
-cd api-blog-expressjs
+git clone https://github.com/your-user/blog-personal-expressjs.git
 ```
 
-2. **Installer les dépendances**
+2. Install dependencies:
 
 ```bash
 npm install
 ```
 
-3. **Configurer la base de données**
-   Créer un fichier `.env` à la racine :
+3. Configure environment variables:
 
-```dotenv
+```env
+PORT=3000
 DB_HOST=localhost
 DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=
-DB_NAME=blogdb
-
-JWT_SECRET=VOTRE_SECRET
-JWT_EXPIRES_IN=3600
+DB_USER=...
+DB_PASSWORD=...
+DB_NAME=...
+JWT_SECRET=...
 ```
 
-4. **Lancer les migrations** (si besoin, via script SQL manuel que tu auras écrit)
-
-5. **Démarrer le serveur**
+4. Start the project:
 
 ```bash
-npm start
+npm run dev
 ```
 
----
+## Testing
 
-## Endpoints principaux
+Unit and integration tests are planned using:
 
-* `POST /api/auth/register` : inscription utilisateur
-* `POST /api/auth/login` : connexion utilisateur
-* `GET /api/articles` : lister les articles avec pagination
-* `GET /api/articles/search?q=motcle` : rechercher des articles
-* `GET /api/articles/:id` : consulter un article
-* `POST /api/articles` : créer un article
-* `PUT /api/articles/:id` : mettre à jour un article
-* `DELETE /api/articles/:id` : supprimer un article
-* `GET /api/categories` : lister les catégories
-* `POST /api/comments` : ajouter un commentaire
-* `GET /api/articles/:id/comments` : lister les commentaires d’un article
+* Jest or Vitest
+* Supertest
 
----
-
-## Tests
-
-Tu peux ajouter des tests avec Jest ou Mocha :
+To run tests:
 
 ```bash
-npm run test
+npm test
 ```
 
----
+## Notes
 
-## Sécurité
+* The Express.js backend does **not** use any ORM; all SQL queries are handled manually.
+* Input validation and security are a priority to prevent XSS, SQL injection, and other vulnerabilities.
+* This project is one of three separate repositories:
 
-* Authentification JWT
-* Hash des mots de passe avec bcrypt
-* Validation stricte des entrées (par exemple avec express-validator)
-
----
-
-## Contribuer
-
-1. Forker le projet
-2. Créer une branche
-3. Soumettre une pull request
-
----
-
-## License
-
-MIT License
+  * Laravel (PHP)
+  * Express.js (Node)
+  * Spring Boot (Java)
 
 ---
