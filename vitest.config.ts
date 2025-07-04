@@ -14,7 +14,7 @@ export default defineConfig({
       "**/.{idea,git,cache,output,temp}/**"
     ],
     coverage: {
-      enabled: true,
+      enabled: false,
       provider: 'v8', // utilise le moteur V8 de Node
       reporter: ['text', 'html', 'lcov'], // formats de rapport
       reportsDirectory: './coverage',
