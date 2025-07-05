@@ -1,6 +1,8 @@
 import express, {Application, json, Request, Response} from "express"
 import cors from "cors"
 import pool  from "./shared/database/client";
+import { errorHandler } from "./shared/middlewares/error.middleware";
+import authRoutes from "./features/auth/auth.route";
 
 
 
@@ -10,12 +12,17 @@ export class App{
     constructor(){
         this.app = express();
         this.initializeMiddlewares();
+         this.initializeError();
         this.initializerRoutes();
     }
 
     private initializeMiddlewares(){
         this.app.use(cors())
         this.app.use(json())
+    }
+
+    private initializeError(){
+        this.app.use(errorHandler);
     }
 
     private initializerRoutes(){
@@ -28,6 +35,8 @@ export class App{
             const result = await pool.query("SELECT NOW()");
             res.send(result.rows);
         });
+
+        this.app.use("/api/auth", authRoutes);
 
     }
     
