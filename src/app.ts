@@ -3,6 +3,7 @@ import cors from "cors"
 import pool  from "./shared/database/client";
 import { errorHandler } from "./shared/middlewares/error.middleware";
 import authRoutes from "./features/auth/auth.route";
+import usersRoutes from "./features/users/users.route"
 
 
 
@@ -37,6 +38,7 @@ export class App{
         });
 
         this.app.use("/api/auth", authRoutes);
+        this.app.use("/api/users", usersRoutes);
 
     }
     
