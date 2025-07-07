@@ -36,7 +36,7 @@ describe("AuthRepository", () => {
     const user = await repository.findByEmail("test@example.com");
 
     expect(mockQuery).toHaveBeenCalledWith(
-      "SELECT id, email, password, created_at, updated_at FROM users WHERE email = $1",
+      "SELECT id, email, password, role, created_at, updated_at FROM users WHERE email = $1",
       ["test@example.com"]
     );
     expect(user?.email).toBe("test@example.com");
