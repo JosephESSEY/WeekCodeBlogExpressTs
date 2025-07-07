@@ -17,9 +17,14 @@ export class UserService{
         return visitors;
     }
 
-    public async getVisitorById(id: string): Promise<User>{
+    public async getVisitorById(id: string): Promise<User | null>{
         const visitor = await this.userRepository.getVisitorById(id);
         if(!visitor) throw ({statusCode : 404, message: "No Visitor found"});
         return visitor;
+    }
+
+    public async updateAccount(id: string, name: string): Promise<User | null>{
+       const updated = await this.userRepository.updateAccount(id, name);
+       return updated;
     }
 }

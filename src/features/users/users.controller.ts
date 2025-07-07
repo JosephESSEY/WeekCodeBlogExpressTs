@@ -44,4 +44,23 @@ export class UserController{
             })
         }
     }
+
+    public updateAccount = async (req: Request, res: Response) => {
+        try {
+            const user = (req as any ).user as DecodedToken;
+            const id = user.id;
+            const { name } = req.body;
+
+            const updated = await this.userService.updateAccount(id, name);
+            res.status(201).json({
+                success: true,
+                message: "Account updated Successfuly",
+                data: updated
+            })
+        } catch (error: any) {
+            res.status(error.statusCode || 500).json({
+                error: error.message
+            })
+        }
+    }
 }
