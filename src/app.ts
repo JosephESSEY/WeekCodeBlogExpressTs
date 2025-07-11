@@ -5,6 +5,7 @@ import { errorHandler } from "./shared/middlewares/error.middleware";
 import authRoutes from "./features/auth/auth.route";
 import usersRoutes from "./features/users/users.route";
 import categorieRoutes from "./features/categories/categories.route";
+import articleRoutes from "./features/articles/articles.route"
 
 
 
@@ -41,6 +42,7 @@ export class App{
         this.app.use("/api/auth", authRoutes);
         this.app.use("/api/users", usersRoutes);
         this.app.use("/api/categories", categorieRoutes);
+        this.app.use("/api/articles", articleRoutes);
 
     }
     
