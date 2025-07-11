@@ -67,7 +67,7 @@ export class CategorieController{
                 success: true,
                 message: "Categories Retrieved successfuly",
                 data: categories,
-                count: categories?.length
+                count: categories?.length 
             })
         } catch (error: any) {
             res.status(error.statusCode || 500).json({
