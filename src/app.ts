@@ -5,7 +5,8 @@ import { errorHandler } from "./shared/middlewares/error.middleware";
 import authRoutes from "./features/auth/auth.route";
 import usersRoutes from "./features/users/users.route";
 import categorieRoutes from "./features/categories/categories.route";
-import articleRoutes from "./features/articles/articles.route"
+import articleRoutes from "./features/articles/articles.route";
+import commentsRoutes from "./features/comments/comments.route";
 
 
 
@@ -43,7 +44,7 @@ export class App{
         this.app.use("/api/users", usersRoutes);
         this.app.use("/api/categories", categorieRoutes);
         this.app.use("/api/articles", articleRoutes);
-
+        this.app.use("/api/comments", commentsRoutes);
     }
     
     public listen(PORT : number){
