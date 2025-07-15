@@ -4,7 +4,7 @@ import { User } from "../users/users.model";
 export class AuthRepository {
   public async findByEmail(email: string): Promise<User | null> {
     const result = await pool.query(
-      "SELECT id, email, password, role, created_at, updated_at FROM users WHERE email = $1",
+      "SELECT id, name, email, password, role, created_at, updated_at FROM users WHERE email = $1",
       [email]
     );
     return result.rows[0] || null;

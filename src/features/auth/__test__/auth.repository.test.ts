@@ -1,86 +1,104 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { AuthRepository } from "../auth.repository";
-import db from "../../../shared/database/client";
-import { QueryResult } from "pg";
+import pool from "../../../shared/database/client";
+import { User } from "../../users/users.model";
+
+vi.mock("../../../shared/database/client");
+
+const FIND_BY_EMAIL_QUERY = "SELECT id, name, email, password, role, created_at, updated_at FROM users WHERE email = $1";
+const CREATE_USER_QUERY = `INSERT INTO users (name, email, password, role)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, email, role, created_at, updated_at`;
 
 describe("AuthRepository", () => {
-  let repository: AuthRepository;
+  let authRepository: AuthRepository;
+  let mockPool: any;
 
   beforeEach(() => {
-    repository = new AuthRepository();
+    authRepository = new AuthRepository();
+    mockPool = vi.mocked(pool);
+    vi.clearAllMocks();
   });
 
-  it("should find a user by email", async () => {
-    const mockQueryResult: QueryResult<any> = {
-      rows: [
-        {
-          id: "uuid-123",
-          email: "test@example.com",
-          password: "hashedpass",
-          created_at: new Date(),
-          updated_at: new Date(),
-        },
-      ],
-      command: "",
-      rowCount: 1,
-      oid: 0,
-      fields: [],
-    };
+  describe("findByEmail", () => {
+    it("doit retrouver un utilisateur à partir de son email", async () => {
+      const mockUser: User = {
+        id: "user-123",
+        name: "Joseph",
+        email: "joseph@example.com",
+        password: "hashed-password",
+        role: "visitor",
+        created_at: new Date("2024-01-01T10:00:00Z"),
+        updated_at: new Date("2024-01-01T10:00:00Z"),
+      };
 
-    const mockQuery = vi
-      .spyOn(db, "query")
-      .mockResolvedValueOnce(
-        mockQueryResult as unknown as ReturnType<typeof db.query>
+      mockPool.query.mockResolvedValue({ rows: [mockUser] });
+
+      const result = await authRepository.findByEmail("joseph@example.com");
+
+      expect(mockPool.query).toHaveBeenCalledWith(
+        FIND_BY_EMAIL_QUERY,
+        ["joseph@example.com"]
       );
 
-    const user = await repository.findByEmail("test@example.com");
+      expect(result).toEqual(mockUser);
+      expect(result).toHaveProperty("id");
+      expect(result).toHaveProperty("email");
+      expect(result).toHaveProperty("role");
+      expect(result?.email).toBe("joseph@example.com");
+    });
 
-    expect(mockQuery).toHaveBeenCalledWith(
-      "SELECT id, email, password, role, created_at, updated_at FROM users WHERE email = $1",
-      ["test@example.com"]
-    );
-    expect(user?.email).toBe("test@example.com");
+    it("doit retourner null si aucun utilisateur n'est trouvé", async () => {
+      mockPool.query.mockResolvedValue({ rows: [] });
 
-    mockQuery.mockRestore();
+      const result = await authRepository.findByEmail("notfound@example.com");
+
+      expect(mockPool.query).toHaveBeenCalledWith(
+        FIND_BY_EMAIL_QUERY,
+        ["notfound@example.com"]
+      );
+      expect(result).toBeNull();
+    });
+
+    it("doit gérer les erreurs de base de données", async () => {
+      const mockError = new Error("Database connection failed");
+      mockPool.query.mockRejectedValue(mockError);
+
+      await expect(
+        authRepository.findByEmail("test@example.com")
+      ).rejects.toThrow("Database connection failed");
+    });
   });
 
-  it("should create a new user", async () => {
-    const mockQueryResult: QueryResult<any> = {
-      rows: [
-        {
-          id: "uuid-123",
-          email: "test@example.com",
-          role: "visitor",
-          created_at: new Date(),
-          updated_at: new Date(),
-        },
-      ],
-      command: "",
-      rowCount: 1,
-      oid: 0,
-      fields: [],
-    };
+  describe("createUser", () => {
+    it("doit créer un nouvel utilisateur", async () => {
+      const mockNewUser: Partial<User> = {
+        id: "user-456",
+        email: "new@example.com",
+        role: "visitor",
+        created_at: new Date("2024-01-01T10:00:00Z"),
+        updated_at: new Date("2024-01-01T10:00:00Z"),
+      };
 
-    const mockQuery = vi
-      .spyOn(db, "query")
-      .mockResolvedValueOnce(
-        mockQueryResult as unknown as ReturnType<typeof db.query>
+      mockPool.query.mockResolvedValue({ rows: [mockNewUser] });
+
+      const result = await authRepository.createUser(
+        "New User",
+        "new@example.com",
+        "hashed123"
       );
 
-    const newUser = await repository.createUser(
-      "john",
-      "test@example.com",
-      "hashedpass"
-    );
+      expect(mockPool.query).toHaveBeenCalledWith(
+        CREATE_USER_QUERY,
+        ["New User", "new@example.com", "hashed123", "visitor"]
+      );
 
-    expect(mockQuery).toHaveBeenCalledWith(
-      `INSERT INTO users (name, email, password, role)
-       VALUES ($1, $2, $3, $4)
-       RETURNING id, email, role, created_at, updated_at`,
-      ["john", "test@example.com", "hashedpass", "visitor"]
-    );
-    expect(newUser?.email).toBe("test@example.com");
+      expect(result).toEqual(mockNewUser);
+      expect(result).toHaveProperty("id");
+      expect(result).toHaveProperty("email");
+      expect(result).toHaveProperty("role");
+      expect(result?.email).toBe("new@example.com");
+    });
 
-    mockQuery.mockRestore();
   });
 });
